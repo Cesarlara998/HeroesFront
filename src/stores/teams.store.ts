@@ -125,10 +125,87 @@ export const useTeamStore = defineStore('teams', {
                 const registro = await store.delete(Team._id);
                 return { status: true, message: 'Equipo eliminado correctamente' };
             }
+            return { status: false, message: 'Ocurrio un error' };
+        },
+        async UpdateTeam(Team: TeamsList): Promise<{ status: boolean, message: string }> {
+
+            if (!Team._id) return { status: false, message: 'Ocurrio un error' };
+            const teamStorage = this.Teams.find(e => e._id === Team._id)
+            if (!teamStorage) return { status: false, message: 'Equipo no existente' };
+
+            const axiosPetition = await axios.patch(`${import.meta.env.VITE_BASE_URL}/teams?part=team`,Team )
+                .then(res => {
+                    if (res.data.status) return { status: true, message: 'Modificado correctamente' };
+                    return { status: false, message: 'Ocurrio un error' };
+                })
+                .catch(err => {
+
+                    return { status: false, message: 'Ocurrio un error' };
+                })
+
+            if (axiosPetition.status) {
+                const indice = this.Teams.findIndex(e => e._id === Team._id);
+                if (indice < 0) {
+                    return { status: false, message: 'Ocurrio un error al actualizar localmente' };
+                }
+                this.Teams.splice(indice, 1,Team);
+                
+                const transaction = this.TeamsDB.transaction(['teams'], 'readwrite');
+                const store = transaction.objectStore('teams');
+                
+                const registro = await store.get(Team._id);
+                registro.onsuccess = () => {
+                    const elemento = registro.result;
+                    elemento.name = Team.name;
+                    elemento.description = Team.description;
+                    store.put(JSON.parse(JSON.stringify(elemento)));
+                }
+
+                return { status: true, message: 'Equipo Actualizado correctamente' };
+            }
+            return { status: false, message: 'Ocurrio un error' };
+        },
+        async DeleteMember(idTeam:string,member:Character): Promise<{ status: boolean, message: string }> {
+            const teamStorage = this.Teams.find(e => e._id === idTeam);
+            if (!teamStorage) return { status: false, message: 'Equipo no existente' };
+            const Member = teamStorage.characters.find(e =>e.id === member.id);
+            if (!Member) return { status: false, message: 'Miembro no existente' };
+            
+            const axiosPetition =  await axios.patch(`${import.meta.env.VITE_BASE_URL}/teams?part=member`,{team:idTeam,member:member} )
+            .then(res => {
+                if (res.data.status) return { status: true, message: 'Modificado correctamente' };
+                return { status: false, message: 'Ocurrio un error' };
+            })
+            .catch(err => {
+
+                return { status: false, message: 'Ocurrio un error' };
+            })
+            if (axiosPetition.status) {
+
+                const transaction = this.TeamsDB.transaction(['teams'], 'readwrite');
+                const store = transaction.objectStore('teams');
+                const indiceMember = teamStorage.characters.findIndex(e =>e.id === member.id);
+                // teamStorage.characters.splice(indiceMember,1);
+                teamStorage.characters.splice(indiceMember,1);
+                // teamStorage.characters =  JSON.parse(JSON.stringify(teamStorage.characters))
+                const registro = await store.get(idTeam);
+                registro.onsuccess = () => {
+                    const elemento = registro.result as TeamsList;
+                    const indiceDB = elemento.characters.findIndex((e: Character) =>e.id === member.id);
+                    console.log(indiceDB,elemento.characters,elemento.characters[indiceDB]);
+                    const newitems = elemento.characters.splice(indiceDB,1);
+                    elemento.characters = newitems;
+                    console.log(elemento);
+                    
+                    store.put(JSON.parse(JSON.stringify(elemento)));
+                }
+                return { status: true, message: 'Heroe agregado al equipo' }
+            }
+            return {status:false,message: "Ocurrio un error"}
         }
     },
     getters: {
-        getTeams: (state) => state.Teams
+        getTeams: (state) => state.Teams,
     }
 })
 

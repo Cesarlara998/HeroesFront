@@ -7,8 +7,6 @@
       </div>
 
     </Dialog>
-    <Dialog v-model:visible="updateDialog" modal header="Creacion de  Equipo" :style="{ width: '80vw' }">
-    </Dialog>
     <DataTable :value="TeamsStore.getTeams" tableStyle="min-width: 50rem">
       <Column field="name" header="nombres"></Column>
       <Column field="description" header="Descripcion">
@@ -38,7 +36,7 @@
             text
             rounded
             aria-label="Bookmark"
-            @click="OpenDialog('updateDialog',slotProps.data)"
+            @click="redirect(slotProps.data._id)"
           />
           <Button
             icon="pi pi-times text-red-500"
@@ -60,38 +58,57 @@ import Panel from 'primevue/panel'
 import ScrollPanel from 'primevue/scrollpanel'
 
 import DataView from 'primevue/dataview'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted,reactive,toRefs  } from 'vue'
 import Button from 'primevue/button'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
-import ColumnGroup from 'primevue/columngroup'
+import InputText from 'primevue/inputtext'
+import Editor from 'primevue/editor'
+import router from '../../router'
 import Dialog from 'primevue/dialog'
-
-import Row from 'primevue/row'
-import Paginator from 'primevue/paginator'
+import { required } from '@vuelidate/validators'
+import { useVuelidate } from '@vuelidate/core'
 import { useTeamStore } from '../../stores/teams.store'
 import type { TeamsList } from '../../interfaces/HeroCharacter.interface'
 import { useToast } from "primevue/usetoast";
+import type {Character} from '../../interfaces/HeroCharacter.interface'
 const searchstring = ''
 const page = ref(0)
-let Selected:TeamsList;
+let Selected = reactive({_id:"",name: '',description: '',characters: [] as Character[]});
 const TeamsStore = useTeamStore()
 const deleteDialog = ref(false)
 const updateDialog = ref(false)
-
 const toast = useToast();
+
+// const rules = {
+//   name: { required }, 
+//   description: { required }
+// }
+// const v$ = useVuelidate(rules, toRefs(Selected))
+let errors: any[] = []
+
+
 const OpenDialog = (action:string,Team: TeamsList) => {
-  Selected = Team;
+  Object.assign(Selected, Team);
+
+  
   if (action === 'updateDialog') updateDialog.value = true
   if (action === 'deleteDialog') deleteDialog.value = true
 }
 
 const CloseDialog = async (action:string) => {
+  
   if (action === 'delete') {
     const resp = await TeamsStore.DeleteTeam(Selected);
     if (!resp.status) toast.add({ severity: 'success', summary: 'success', detail: resp.message, life: 3000 });
   }
+  if (action === "deleteMember") {
+    
+  }
   updateDialog.value = false
   deleteDialog.value = false
+}
+const redirect = async (id:string) => {
+  router.push(`/teams/${id}`);
 }
 </script>
