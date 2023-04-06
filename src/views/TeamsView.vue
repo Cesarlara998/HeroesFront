@@ -91,7 +91,8 @@ const items = ref([
 
   {
     label: 'Favoritos',
-    icon: 'pi pi-fw pi-star'
+    icon: 'pi pi-fw pi-star',
+    to: "favorites"
   }
 ])
 

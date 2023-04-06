@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
-import { ref } from 'vue';
 import type { HeroesList } from '../interfaces/HeroCharacter.interface';
 
 
@@ -41,6 +40,9 @@ export const useHeroesStore = defineStore('heroes', {
                     return false;
                 })
 
+        },
+        async getHerobyId(id:number) {
+            return axios.get(`${import.meta.env.VITE_BASE_URL}/heroes?id=${id}`).then(res => res)
         }
     },
     getters: {

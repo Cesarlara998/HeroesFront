@@ -56,8 +56,8 @@
               <div
                 class="text-center align-items-center sm:align-items-end gap-3 sm:gap-2"
               >
-                <Button icon="pi pi-heart" class="m-1 bg-red-200" color="secondary" @click="SearchToTeam(hero)" rounded></Button>
-                <Button icon="pi pi-star" class="m-1" color="secondary" rounded></Button>
+                <Button icon="pi pi-heart" class="m-1 bg-blue-900" color="secondary" @click="SearchToTeam(hero)" rounded></Button>
+                <Button icon="pi pi-star" :class="isFavorite(hero.data.id,'class')"   color="primary" rounded @click="addFavorite(hero)"></Button>
               </div>
             </div>
           </div>
@@ -98,6 +98,7 @@ import { useToast } from "primevue/usetoast";
 import { useTeamStore } from '../../stores/teams.store'
 import Dialog from 'primevue/dialog';
 import type { Character } from '../../interfaces/HeroCharacter.interface'
+import { useFavoritesStore } from '../../stores/favorites.store';
 let selectedMember:Character;
 const searchstring = ''
 const toast = useToast();
@@ -106,13 +107,23 @@ const HeroesStore = useHeroesStore()
 const TeamsStore = useTeamStore()
 const visible = ref(false);
 const selectedTeam = ref();
+const favoritesStore = useFavoritesStore();
+
+
+
 onMounted(async () => {
 
   await HeroesStore.getPage(HeroesStore.page,"number")
 })
 
+const isFavorite = (id:number,action:string) => {
+  if (favoritesStore.getFavoritesId.find(e => e === id)) {
+    if (action === "class") return "m-1 bg-blue-500";
+  }
+  if (action === "class") return "m-1 bg-blue-900"
+}
 const addFavorite = async (event:any) => {
-
+  await favoritesStore.addFavorite(event.data);
 }
 
 const SearchToTeam = async (event:any) => {
@@ -125,7 +136,6 @@ const addToTeam = async (event:any) => {
     return toast.add({ severity: 'error', summary: 'error', detail: 'Equipo no seleccionado', life: 3000 });
   }
   const addMember = await TeamsStore.AddCharacterToTeam(selectedMember,selectedTeam.value)
-  console.log(addMember);
   
   if (!addMember.status) toast.add({ severity: 'error', summary: 'error', detail: addMember.message, life: 3000 });
   if (addMember.status) toast.add({ severity: 'success', summary: 'success', detail: addMember.message, life: 3000 });
@@ -136,4 +146,6 @@ const updatePage = async (event: any) => {
   
   await HeroesStore.getPage(event,"number")
 }
+
+
 </script>

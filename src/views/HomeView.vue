@@ -24,7 +24,7 @@ import Button from 'primevue/button'
 
 import { ref } from 'vue'
 import { useHeroesStore } from '../stores/heroes.store'
-const HeroesStore = useHeroesStore()
+const HeroesStore = useHeroesStore();
 const listref = ref(null);
 
 const visible = ref(false)
@@ -44,16 +44,14 @@ const items = ref([
 
   {
     label: 'Favoritos',
-    icon: 'pi pi-fw pi-star'
+    icon: 'pi pi-fw pi-star',
+    to: "favorites"
   }
 ])
 const searchCharacters = () => {
   HeroesStore.$reset()
   if (search.value.length === 0) return HeroesStore.getPage(1,"search")
   return HeroesStore.getPage(1,"search",search.value)
-  
-
-  
 }
 
 </script>

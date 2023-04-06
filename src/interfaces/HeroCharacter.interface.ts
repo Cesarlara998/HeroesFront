@@ -3,13 +3,17 @@ interface thumbnail {
     path: string;
 }
 
+interface events {
+    name: string;
+}
 interface Character {
-    descripcion: string,
+    description: string,
     id: number,
     modified: Date,
     name: string,
     resourceUri: string;
     thumbnail: thumbnail
+    events: { items:events[]}
 }
 interface TeamsList {
     _id: string,

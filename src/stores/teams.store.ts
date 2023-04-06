@@ -195,7 +195,6 @@ export const useTeamStore = defineStore('teams', {
                     console.log(indiceDB,elemento.characters,elemento.characters[indiceDB]);
                     const newitems = elemento.characters.splice(indiceDB,1);
                     elemento.characters = newitems;
-                    console.log(elemento);
                     
                     store.put(JSON.parse(JSON.stringify(elemento)));
                 }
