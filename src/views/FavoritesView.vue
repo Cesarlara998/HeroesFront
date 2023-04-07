@@ -76,7 +76,7 @@ import { useToast } from "primevue/usetoast";
 const heroStore = useHeroesStore();
 const favoriteStore = useFavoritesStore()
 const toast = useToast();
-let dataHero: Character = {name:'onload',descripcion:'onload',id:0,modified:new Date(),resourceUri:'onload',thumbnail:{extension:'onload',path:'onload'}}
+let dataHero: Character = {name:'onload',description:'onload',id:0,modified:new Date(),resourceUri:'onload',thumbnail:{extension:'onload',path:'onload'},events:{items:[]}}
 const search = ref('')
 const visible = ref(false);
 const items = ref([
