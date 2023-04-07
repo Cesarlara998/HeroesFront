@@ -123,7 +123,14 @@ const isFavorite = (id:number,action:string) => {
   if (action === "class") return "m-1 bg-blue-900"
 }
 const addFavorite = async (event:any) => {
-  await favoritesStore.addFavorite(event.data);
+  const response = await favoritesStore.addFavorite(event.data) 
+  if (response?.status === true) {
+    return toast.add({ severity: 'success', summary: 'Success', detail: response.message, life: 3000 });
+  }
+  console.log(response);
+  
+  return toast.add({ severity: 'error', summary: 'error', detail: response?.message, life: 3000 });
+  // await favoritesStore.addFavorite(event.data);
 }
 
 const SearchToTeam = async (event:any) => {

@@ -9,7 +9,7 @@
               <p class="text-center">{{ dataHero.description || "SIN DESCRIPCION" }}</p>
 
               <p class="text-center font-bold">Eventos</p>
-              <div class="flex">
+              <div class="flex flex-wrap justify-content-center">
                 <span v-for="events in dataHero.events.items" class="m-2 gap-2">
                       <i class="pi pi-tag"></i>
                       <span class="font-semibold">{{ events.name }}</span>
