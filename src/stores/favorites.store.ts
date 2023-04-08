@@ -5,7 +5,7 @@ import type { Character } from '../interfaces/HeroCharacter.interface'
 export const useFavoritesStore = defineStore('favorites', {
     state: () => {
         return {
-            FavoritesDB: null,
+            FavoritesDB: undefined as IDBDatabase | undefined,
             Favorites: [] as Character[]
         }
     },
@@ -23,28 +23,33 @@ export const useFavoritesStore = defineStore('favorites', {
                     return { status: false, message: 'Ocurrio un error' };
                 })
             if (axiosSave.status) {
-                const transaction = this.FavoritesDB.transaction(['favorites'], 'readwrite');
+                const transaction = this.FavoritesDB?.transaction(['favorites'], 'readwrite');
+                if (transaction) {
+
                 const store = transaction.objectStore('favorites');
                 store.put(JSON.parse(JSON.stringify(character)));
                 this.Favorites.push(JSON.parse(JSON.stringify(character)));
                 return { status: true, message: 'Heroe agregado a favoritos' };
+                }
             }
         },
         syncFavorites(characters: Character[]) {
             if (characters.length !== 0) return this.Favorites = characters;
             axios.get(`${import.meta.env.VITE_BASE_URL}/favorites`)
                 .then(res => {
-                    const transaction = this.FavoritesDB.transaction(['favorites'], 'readwrite');
+                    const transaction = this.FavoritesDB?.transaction(['favorites'], 'readwrite');
+                    if (transaction) {
+
                     const store = transaction.objectStore('favorites');
                     // this.Teams.push(res.data.team)
                     // store.put(...res.data)
-                    res.data.forEach(element => {
+                    res.data.forEach((element: any) => {
                         store.put(element)
                     });
                     this.Favorites.push(...res.data)
                     return { status: true, message: 'Teams cargados correctamente' };
                     // let request = indexedDB.open('teams', 1);
-
+                }
 
                 })
                 .catch(err => {
@@ -61,12 +66,15 @@ export const useFavoritesStore = defineStore('favorites', {
                     return { status: false, message: 'Ocurrio un error' };
                 })
             if (axiosPetition.status) {
-                const transaction = this.FavoritesDB.transaction(['favorites'], 'readwrite');
+                const transaction = this.FavoritesDB?.transaction(['favorites'], 'readwrite');
+                if (transaction) {
+
                 const store = transaction.objectStore('favorites');
                 const indice = this.Favorites.findIndex(e => e.id === characterId);
                 this.Favorites.splice(indice, 1);
                 store.delete(characterId);
                 return { status: true, message: 'Personaje eliminado de favoritos correctamente' }
+                }
             }
         }
     },

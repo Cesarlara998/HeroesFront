@@ -13,20 +13,12 @@
 </template>
 
 <script setup lang="ts">
-import InputText from 'primevue/inputtext'
-import Dialog from 'primevue/dialog'
-import Editor from 'primevue/editor'
+
 import Panel from 'primevue/panel'
 import Menubar from 'primevue/menubar'
-import Button from 'primevue/button'
-import { ref, reactive, toRefs, onMounted, watchEffect,inject,computed  } from 'vue'
+import { ref } from 'vue'
 import { useTeamStore } from '../stores/teams.store'
-import Toolbar from 'primevue/toolbar'
-import SplitButton from 'primevue/splitButton'
-import { useVuelidate } from '@vuelidate/core'
-import { required } from '@vuelidate/validators'
-import { useToast } from 'primevue/usetoast'
-import { useRoute } from 'vue-router'
+
 import UpdateTeamComponent from '../components/Heroes/updateTeam.component.vue'
 const teamStore = useTeamStore()
 
